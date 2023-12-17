@@ -1,4 +1,5 @@
 #include <gst/gst.h>
+#include <stdio.h>
 
 #ifdef __APPLE__ 
 #include <TargetConditionals.h>
@@ -13,12 +14,18 @@ int tutorial_main(int argc, char* argv[]){
     gst_init(&argc,&argv);
 
     /* Build the pipeline */
-    pipeline = gst_parse_launch("playbin uri=https://gstreamer.freedesktop.org/data/media/sintel_trailer-480p.webm",NULL);
+    char str[1<<9], buffer[1<<10];
+    printf("Enter uri for video: ");
+    scanf("%s",str);
+    // Default video
+    // str="https://gstreamer.freedesktop.org/data/media/sintel_trailer-480p.webm";
+    sprintf(buffer,"playbin uri=%s",str);
+    pipeline = gst_parse_launch(buffer,NULL);
 
     /* Start playing */
     gst_element_set_state(pipeline,GST_STATE_PLAYING);
 
-    /* Wait until error or EOS */
+    /* Wait until error or EOS (End of stream) */
     bus=gst_element_get_bus(pipeline);
     msg=gst_bus_timed_pop_filtered(
         bus,
